@@ -1,0 +1,5 @@
+Files:
+- ASM: --- Handles inputs....?
+-LS8: ---- Example codes    
+-CPU.py: Where the memory is stored
+-ls8.py:  Runs the programs
