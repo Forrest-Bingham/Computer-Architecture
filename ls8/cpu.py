@@ -10,9 +10,10 @@ class CPU:
         #pass
         #8 registers
         self.reg = [0] * 8
-        #255 storage for ram
+        #255 storage for ram -- Memory
         self.ram = [0] * 256
         self.pc = 0
+        self.sp = 7
 
     def ram_read(self, MAR):
 
@@ -95,6 +96,8 @@ class CPU:
         LDI = 0b10000010
         PRN = 0b01000111
         MUL = 0b10100010
+        PUSH = 0b01000101
+        POP = 0b01000110
         running = True
 
         #while running!:
@@ -121,33 +124,83 @@ class CPU:
 
             elif instruction == LDI:
                 print("******** LDI COMMAND INITIATED *******")
-                print(self.reg, "--- self.reg")
-                print(reg_a, "--- reg_a")
-                print(reg_b, "--- reg_b")
-                print(self.reg[reg_a], "--- Before")
+                #print(self.reg, "--- self.reg")
+                #print(reg_a, "--- reg_a")
+                #print(reg_b, "--- reg_b")
+                #print(self.reg[reg_a], "--- Before")
                 #Set reg_a = to reg_b
                 self.reg[reg_a] = reg_b
-                print(self.reg[reg_a], "--- After")
+                #print(self.reg[reg_a], "--- After")
                 self.pc += 3
 
-                print(self.reg, "--- self.reg")
+                #print(self.reg, "--- self.reg")
 
             elif instruction == PRN:
                 print("******* PRINT COMMAND INITIATED *********")
-                print(self.pc, "--- self.pc")
-                print(self.reg, "--- self.reg")
-                print(reg_a, "--- reg_a")
+                #print(self.pc, "--- self.pc")
+                #print(self.reg, "--- self.reg")
+                #print(reg_a, "--- reg_a")
                 print(self.reg[reg_a])
                 self.pc += 2
 
             elif instruction == MUL:
                 print("******** MULTIPLY COMMAND INITIATED ********")
-                print(self.reg, " --- self.reg")
-                print(self.reg[reg_a], " -- reg_a")
-                print(self.reg[reg_b], " -- reg_b")
+                #print(self.reg, " --- self.reg")
+                #print(self.reg[reg_a], " -- reg_a")
+                #print(self.reg[reg_b], " -- reg_b")
                 mul = self.reg[reg_a] * self.reg[reg_b]
-                print(mul)
+                #print(mul)
+                self.reg[reg_a] = mul
+                #print(self.reg[reg_a], "--------- self.reg[reg_a]")
                 self.pc += 3
+
+            elif instruction == PUSH:
+                print("*************PUSH COMMAND INITIATED ********")
+                #Choose register
+                reg = self.ram[self.pc + 1]
+                print(reg, "--- reg")
+                
+                #Decrement the SP (Stack Pointer)
+                print(self.reg[self.sp])
+                self.reg[self.sp] -= 1
+                print("After ---")
+                print(self.reg[self.sp])
+
+                #get register number
+
+                #Get value out of register
+                val = self.reg[reg_a]
+                print(val, "--- Val")
+                #Store value in memory at SP
+                top_of_stack_address = self.reg[self.sp]
+
+                print(top_of_stack_address, " --- Top of stack address")
+
+                self.ram[top_of_stack_address] = val
+
+                print(self.ram[top_of_stack_address], "self.ram[top of stack address]")
+
+                self.pc += 2
+
+            elif instruction == POP:
+                print("******** POP COMMAND INITIATED ********")
+                #Copy value where SP is pointing to
+                print(self.reg, "--- self.reg")
+                print(self.ram, "--- self.ram")
+                reg = self.ram[self.pc+1]
+                print(reg, "--- reg")
+                #Put it in the register
+                val = self.ram[self.reg[self.sp]]
+
+                self.reg[reg] = val
+
+                #increment SP
+
+                self.reg[self.sp] += 1
+
+                #increment pc
+
+                self.pc += 2
 
             else: 
                 print(f'unknown instruction {instruction} at address {pc}')
