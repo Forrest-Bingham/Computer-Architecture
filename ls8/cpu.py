@@ -98,6 +98,9 @@ class CPU:
         MUL = 0b10100010
         PUSH = 0b01000101
         POP = 0b01000110
+        CALL = 0b01010000
+        RET = 0b000010001
+        ADD = 0b10100000
         running = True
 
         #while running!:
@@ -202,8 +205,47 @@ class CPU:
 
                 self.pc += 2
 
+            elif instruction == CALL:
+                print("**** CALL COMMAND ****")
+
+                return_address = self.pc + 2
+                print(return_address, "--- Return address")
+                #Push it on the stack
+                self.reg[self.sp] -= 1
+                top_of_stack_address = self.reg[self.sp]
+                print(top_of_stack_address, "--- Top of stack address")
+                self.ram[top_of_stack_address] = return_address
+
+                #Set pc to subroutine address
+                register_number = self.ram[self.pc+1]
+                print(register_number, "--- register number")
+                subroutine_address = self.reg[register_number]
+                print(subroutine_address, "--- SubRoutine Address")
+                self.pc = subroutine_address
+
+            
+
+            elif instruction == RET:
+                print("**** RETURN COMMAND ***")
+
+                top_of_stack_address = self.reg[self.sp]
+                return_address = self.ram[top_of_stack_address]
+                self.reg[self.sp] += 1
+
+                self.pc = return_address
+
+            elif instruction == ADD:
+
+                self.alu("ADD", reg_a, reg_b)
+
+                self.pc += 3
+
+
+                
+                
+
             else: 
-                print(f'unknown instruction {instruction} at address {pc}')
+                print(f'unknown instruction {instruction} at address {self.pc}')
                 running = False
                 sys.exit()
 		        
